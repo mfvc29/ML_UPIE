@@ -208,9 +208,18 @@ st.markdown("""
     <p style="font-size: 0.95rem; color: #666; margin: 0 0 12px 0;">
         Sistema Predictivo de Alerta Temprana | Gradient Boosting Classifier | Trabajo Final - Machine Learning for Business
     </p>
-    <p style="font-size: 0.85rem; color: #888; margin: 0;">
-        <b>Equipo:</b> Ana Távara | Patricia Muñoz | Victor Cuchca | Martin Vargas | Miriam Fallaque | Jean Pierre Nolasco | Diego Bielich
-    </p>
+    <div style="font-size: 0.85rem; color: #888; margin: 0;">
+        <b>Equipo:</b>
+        <ul style="margin-top: 4px; padding-left: 20px;">
+            <li>Ana Távara</li>
+            <li>Diego Bielich</li>
+            <li>Jean Pierre Nolasco</li>
+            <li>Martin Vargas</li>
+            <li>Miriam Fallaque</li>
+            <li>Patricia Muñoz</li>
+            <li>Victor Cuchca</li>
+        </ul>
+    </div>
 </div>
 """, unsafe_allow_html=True)
 

@@ -3,6 +3,13 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
+from sklearn.model_selection import train_test_split
+from sklearn.pipeline import Pipeline
+from sklearn.compose import ColumnTransformer
+from sklearn.impute import SimpleImputer
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.metrics import classification_report, confusion_matrix, roc_curve, auc
 
 # ─── Configuración ─────────────────────────────────────────────────────────────
 st.set_page_config(
@@ -129,6 +136,50 @@ def cargar_datos():
         return None
 
 df = cargar_datos()
+
+# ─── Entrenamiento de Modelo (Cacheado) ──────────────────────────────────────
+@st.cache_resource(show_spinner=False)
+def train_model(data):
+    if data is None:
+        return None, None, None
+        
+    df_model = data.copy()
+    leakage_cols = ['V022_EstadoMatricula', 'V001_StudentID', 'V002_MatriculaID', 'V077_SegmentoRetencion', 'V078_TutoriasRecomendadas']
+    target_col = 'V075_DesercionBinario'
+    
+    drop_cols = [col for col in leakage_cols if col in df_model.columns] + [target_col]
+    X = df_model.drop(columns=drop_cols)
+    y = df_model[target_col]
+    
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
+    
+    num_features = X.select_dtypes(include=['int64', 'float64']).columns
+    cat_features = X.select_dtypes(include=['object', 'category']).columns
+    
+    num_transformer = Pipeline(steps=[
+        ('imputer', SimpleImputer(strategy='median')),
+        ('scaler', StandardScaler())
+    ])
+    
+    cat_transformer = Pipeline(steps=[
+        ('imputer', SimpleImputer(strategy='constant', fill_value='Desconocido')),
+        ('onehot', OneHotEncoder(handle_unknown='ignore', sparse_output=False))
+    ])
+    
+    preprocessor = ColumnTransformer(transformers=[
+        ('num', num_transformer, num_features),
+        ('cat', cat_transformer, cat_features)
+    ])
+    
+    model = Pipeline(steps=[
+        ('preprocessor', preprocessor),
+        ('classifier', GradientBoostingClassifier(n_estimators=150, learning_rate=0.1, random_state=42))
+    ])
+    
+    model.fit(X_train, y_train)
+    return model, X_test, y_test
+
+model_gb, X_test, y_test = train_model(df)
 
 
 # ─── Helper: layout de gráficos con fondo blanco ──────────────────────────────
@@ -383,6 +434,7 @@ elif seccion == "Exploración del Dataset":
                           color="V075_DesercionBinario",
                           color_discrete_map={0: UPC_DARK, 1: UPC_RED},
                           opacity=0.5,
+                          render_mode="svg",
                           labels={"V026_MoraPensionDias": "Mora en Pensión (días)",
                                   "V031_TasaAsistenciaPct": "Asistencia (%)",
                                   "V075_DesercionBinario": "Desertor"})
@@ -597,56 +649,67 @@ elif seccion == "Mapa de Calor de Riesgo":
 elif seccion == "Resultados del Modelo":
     st.markdown('<div class="section-title">Resultados del Modelo — Gradient Boosting Classifier</div>', unsafe_allow_html=True)
 
-    c1, c2, c3, c4 = st.columns(4)
-    for col, val, lbl in zip([c1,c2,c3,c4],
-                             ["80%","0.6639","0.89","0.10"],
-                             ["Accuracy Global","ROC-AUC Score","F1 (Activos)","F1 (Desertores)"]):
-        col.markdown(f'<div class="kpi-card"><div class="kpi-val">{val}</div><div class="kpi-lbl">{lbl}</div></div>', unsafe_allow_html=True)
-
-    st.markdown("<br>", unsafe_allow_html=True)
-    col_a, col_b = st.columns(2)
-
-    with col_a:
-        # Classification report
-        st.markdown('<div class="section-title">Reporte de Clasificación (Set de Prueba · 1,600 est.)</div>', unsafe_allow_html=True)
-        rep = pd.DataFrame({
-            "Clase": ["0 — Activo","1 — Desertor","Macro Avg","Weighted Avg"],
-            "Precision": [0.81,0.49,0.65,0.75],
-            "Recall": [0.99,0.05,0.52,0.80],
-            "F1-Score": [0.89,0.10,0.49,0.74],
-            "Support": [1288,312,1600,1600],
-        })
-        st.dataframe(rep.style.format({"Precision":"{:.2f}","Recall":"{:.2f}","F1-Score":"{:.2f}"}),
-                     use_container_width=True)
-
-        # Matriz de confusión
-        st.markdown('<div class="section-title">Matriz de Confusión</div>', unsafe_allow_html=True)
-        z = [[1275,13],[296,16]]
-        annotations = [["VN: 1,275","FP: 13"],["FN: 296","VP: 16"]]
-        fig_cm = go.Figure(go.Heatmap(
-            z=z, x=["Pred: Activo","Pred: Desertor"], y=["Real: Activo","Real: Desertor"],
-            colorscale=[[0,UPC_LIGHT],[1,UPC_RED]],
-            showscale=False,
-            text=annotations, texttemplate="%{text}",
-            textfont=dict(size=14, color=UPC_DARK),
-        ))
-        fig_cm.update_layout(paper_bgcolor=UPC_WHITE, plot_bgcolor=UPC_WHITE,
-                              font=dict(color=UPC_DARK), height=260, margin=dict(l=10,r=10,t=10,b=10))
-        st.plotly_chart(fig_cm, use_container_width=True)
-
-        # Curva ROC
-        st.markdown('<div class="section-title">Curva ROC</div>', unsafe_allow_html=True)
-        fpr = np.linspace(0,1,100)
-        tpr = np.clip(fpr**0.45*1.18, 0, 1)
-        fig_roc = go.Figure()
-        fig_roc.add_trace(go.Scatter(x=fpr, y=tpr, name="Gradient Boosting (AUC=0.6639)",
-                                     line=dict(color=UPC_RED, width=2.5)))
-        fig_roc.add_trace(go.Scatter(x=fpr, y=fpr, name="Clasificador Aleatorio",
-                                     line=dict(color=UPC_GREY, dash="dash", width=1.5)))
-        upc_layout(fig_roc, "Curva ROC — Gradient Boosting Classifier", height=320)
-        fig_roc.update_layout(xaxis_title="FPR", yaxis_title="TPR",
-                              legend=dict(font=dict(color=UPC_DARK)))
-        st.plotly_chart(fig_roc, use_container_width=True)
+    if model_gb is not None:
+        from sklearn.metrics import accuracy_score, f1_score
+        y_pred = model_gb.predict(X_test)
+        y_prob = model_gb.predict_proba(X_test)[:, 1]
+        
+        acc = accuracy_score(y_test, y_pred)
+        fpr, tpr, _ = roc_curve(y_test, y_prob)
+        roc_val = auc(fpr, tpr)
+        f1_0 = f1_score(y_test, y_pred, pos_label=0)
+        f1_1 = f1_score(y_test, y_pred, pos_label=1)
+        
+        c1, c2, c3, c4 = st.columns(4)
+        for col, val, lbl in zip([c1,c2,c3,c4],
+                                 [f"{acc*100:.1f}%", f"{roc_val:.4f}", f"{f1_0:.2f}", f"{f1_1:.2f}"],
+                                 ["Accuracy Global","ROC-AUC Score","F1 (Activos)","F1 (Desertores)"]):
+            col.markdown(f'<div class="kpi-card"><div class="kpi-val">{val}</div><div class="kpi-lbl">{lbl}</div></div>', unsafe_allow_html=True)
+    
+        st.markdown("<br>", unsafe_allow_html=True)
+        col_a, col_b = st.columns(2)
+    
+        with col_a:
+            # Classification report
+            st.markdown(f'<div class="section-title">Reporte de Clasificación (Set de Prueba · {len(y_test):,} est.)</div>', unsafe_allow_html=True)
+            report = classification_report(y_test, y_pred, output_dict=True)
+            rep = pd.DataFrame({
+                "Clase": ["0 — Activo","1 — Desertor","Macro Avg","Weighted Avg"],
+                "Precision": [report["0"]["precision"], report["1"]["precision"], report["macro avg"]["precision"], report["weighted avg"]["precision"]],
+                "Recall": [report["0"]["recall"], report["1"]["recall"], report["macro avg"]["recall"], report["weighted avg"]["recall"]],
+                "F1-Score": [report["0"]["f1-score"], report["1"]["f1-score"], report["macro avg"]["f1-score"], report["weighted avg"]["f1-score"]],
+                "Support": [int(report["0"]["support"]), int(report["1"]["support"]), int(report["macro avg"]["support"]), int(report["weighted avg"]["support"])],
+            })
+            st.dataframe(rep.style.format({"Precision":"{:.2f}","Recall":"{:.2f}","F1-Score":"{:.2f}"}),
+                         use_container_width=True)
+    
+            # Matriz de confusión
+            st.markdown('<div class="section-title">Matriz de Confusión</div>', unsafe_allow_html=True)
+            cm = confusion_matrix(y_test, y_pred)
+            z = [[cm[0,0], cm[0,1]], [cm[1,0], cm[1,1]]]
+            annotations = [[f"VN: {cm[0,0]:,}", f"FP: {cm[0,1]:,}"], [f"FN: {cm[1,0]:,}", f"VP: {cm[1,1]:,}"]]
+            fig_cm = go.Figure(go.Heatmap(
+                z=z, x=["Pred: Activo","Pred: Desertor"], y=["Real: Activo","Real: Desertor"],
+                colorscale=[[0,UPC_LIGHT],[1,UPC_RED]],
+                showscale=False,
+                text=annotations, texttemplate="%{text}",
+                textfont=dict(size=14, color=UPC_DARK),
+            ))
+            fig_cm.update_layout(paper_bgcolor=UPC_WHITE, plot_bgcolor=UPC_WHITE,
+                                  font=dict(color=UPC_DARK), height=260, margin=dict(l=10,r=10,t=10,b=10))
+            st.plotly_chart(fig_cm, use_container_width=True)
+    
+            # Curva ROC
+            st.markdown('<div class="section-title">Curva ROC</div>', unsafe_allow_html=True)
+            fig_roc = go.Figure()
+            fig_roc.add_trace(go.Scatter(x=fpr, y=tpr, name=f"Gradient Boosting (AUC={roc_val:.4f})",
+                                         line=dict(color=UPC_RED, width=2.5)))
+            fig_roc.add_trace(go.Scatter(x=[0,1], y=[0,1], name="Clasificador Aleatorio",
+                                         line=dict(color=UPC_GREY, dash="dash", width=1.5)))
+            upc_layout(fig_roc, "Curva ROC — Gradient Boosting Classifier", height=320)
+            fig_roc.update_layout(xaxis_title="FPR", yaxis_title="TPR",
+                                  legend=dict(font=dict(color=UPC_DARK)))
+            st.plotly_chart(fig_roc, use_container_width=True)
 
     with col_b:
         # Feature Importance (celda 17 del notebook)

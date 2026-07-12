@@ -12,187 +12,112 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# ─── Paleta UPC Refinada (Tema Claro) ───────────────────────────────────────────
-UPC_RED     = "#E1251B"
-UPC_DARK    = "#2D2D2D"
-UPC_LIGHT   = "#F8F9FA"
-UPC_RED_L   = "#FDF2F2"   # rojo muy claro para fondos
-UPC_GREY    = "#EAEAEA"
+# ─── Paleta Minimalista (Referencia) ───────────────────────────────────────────
+UPC_RED     = "#FF4B4B"
+UPC_DARK    = "#31333F"
+UPC_LIGHT   = "#FAFAFA"
+UPC_RED_L   = "#FDF2F2"
+UPC_GREY    = "#E2E8F0"
 UPC_WHITE   = "#FFFFFF"
 
-# ─── CSS con identidad UPC ────────────────────────────────────────────────────
+# ─── CSS Minimalista ──────────────────────────────────────────────────────────
 st.markdown(f"""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
     html, body, [class*="css"] {{
         font-family: 'Inter', sans-serif;
-        background-color: {UPC_LIGHT};
+        background-color: {UPC_WHITE};
         color: {UPC_DARK};
     }}
 
-    /* Fondo general más claro y suave */
-    .stApp {{ background-color: {UPC_LIGHT}; }}
+    .stApp {{ background-color: {UPC_WHITE}; }}
 
-    /* Sidebar claro y elegante */
     section[data-testid="stSidebar"] {{
-        background-color: {UPC_WHITE};
+        background-color: {UPC_LIGHT};
         border-right: 1px solid {UPC_GREY};
-        box-shadow: 2px 0 10px rgba(0,0,0,0.02);
     }}
-    section[data-testid="stSidebar"] .stRadio label,
-    section[data-testid="stSidebar"] .stSelectbox label,
-    section[data-testid="stSidebar"] p,
-    section[data-testid="stSidebar"] div,
-    section[data-testid="stSidebar"] span {{ 
+    section[data-testid="stSidebar"] * {{ 
         color: {UPC_DARK} !important; 
     }}
 
-    /* Encabezado UPC Modernizado */
-    .upc-header {{
-        background: linear-gradient(135deg, {UPC_RED} 0%, #b71c1c 100%);
-        border-radius: 16px;
-        padding: 24px 36px;
-        margin-bottom: 28px;
-        display: flex;
-        align-items: center;
-        gap: 24px;
-        box-shadow: 0 8px 24px rgba(225,37,27,0.15);
-    }}
-    .upc-header h1 {{
-        color: white !important;
-        font-size: 2rem;
-        font-weight: 800;
-        margin: 0;
-        line-height: 1.2;
-        letter-spacing: -0.02em;
-    }}
-    .upc-header p {{
-        color: rgba(255,255,255,0.9);
-        font-size: 1rem;
-        margin: 6px 0 0 0;
-        font-weight: 400;
-    }}
-    .upc-logo-circle {{
-        display: none;
-    }}
-
-    /* Tarjetas de métricas más limpias */
+    /* Tarjetas de métricas tipo Streamlit nativo */
     .kpi-card {{
         background: {UPC_WHITE};
         border: 1px solid {UPC_GREY};
-        border-radius: 12px;
-        padding: 20px;
-        text-align: center;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-        transition: transform 0.2s, box-shadow 0.2s;
-        position: relative;
-        overflow: hidden;
-    }}
-    .kpi-card::before {{
-        content: '';
-        position: absolute;
-        top: 0; left: 0; width: 100%; height: 4px;
-        background: {UPC_RED};
-    }}
-    .kpi-card:hover {{ 
-        transform: translateY(-2px);
-        box-shadow: 0 8px 24px rgba(225,37,27,0.1); 
+        border-radius: 8px;
+        padding: 16px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
     }}
     .kpi-val {{
-        font-size: 2.4rem;
-        font-weight: 800;
-        color: {UPC_RED};
-        line-height: 1.1;
-        margin-bottom: 4px;
+        font-size: 2.2rem;
+        font-weight: 500;
+        color: {UPC_DARK};
+        line-height: 1.2;
     }}
     .kpi-lbl {{
-        font-size: 0.8rem;
-        color: #666;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
+        font-size: 0.85rem;
+        color: #555;
+        font-weight: 500;
+        margin-bottom: 4px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
     }}
 
-    /* Tabla de entregables refinada */
     .deliverable-row {{
         background: {UPC_WHITE};
         border: 1px solid {UPC_GREY};
-        border-left: 4px solid {UPC_RED};
-        border-radius: 10px;
-        padding: 18px 22px;
+        border-radius: 8px;
+        padding: 16px 20px;
         margin-bottom: 12px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.02);
     }}
     .deliverable-row h4 {{
         color: {UPC_DARK};
         margin: 0 0 8px 0;
-        font-size: 1.05rem;
-        font-weight: 700;
+        font-size: 1rem;
+        font-weight: 600;
     }}
     .deliverable-row p {{
         color: #555;
         font-size: 0.9rem;
         margin: 0;
-        line-height: 1.6;
-    }}
-    .session-badge {{
-        background: {UPC_RED_L};
-        color: {UPC_RED};
-        border-radius: 6px;
-        padding: 4px 12px;
-        font-size: 0.75rem;
-        font-weight: 700;
-        display: inline-block;
-        margin-top: 10px;
+        line-height: 1.5;
     }}
 
-    /* Sección título más sutil */
     .section-title {{
-        font-size: 1.4rem;
-        font-weight: 800;
+        font-size: 1.6rem;
+        font-weight: 600;
         color: {UPC_DARK};
+        margin-top: 10px;
         margin-bottom: 20px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }}
-    .section-title::before {{
-        content: '';
-        display: inline-block;
-        width: 6px;
-        height: 24px;
-        background-color: {UPC_RED};
-        border-radius: 4px;
     }}
 
-    /* Divider */
     hr.upc {{ border: none; border-top: 1px solid {UPC_GREY}; margin: 24px 0; }}
 
-    /* Alertas mejoradas */
     .alert-red {{
         background: {UPC_RED_L};
-        border-left: 4px solid {UPC_RED};
-        border-radius: 8px;
-        padding: 16px 20px;
+        border: 1px solid #FBC4C4;
+        border-radius: 6px;
+        padding: 16px;
         color: {UPC_DARK};
-        font-size: 0.95rem;
+        font-size: 0.9rem;
         margin-bottom: 16px;
-        box-shadow: 0 2px 6px rgba(225,37,27,0.05);
     }}
     .alert-grey {{
         background: {UPC_WHITE};
         border: 1px solid {UPC_GREY};
-        border-left: 4px solid #666;
-        border-radius: 8px;
-        padding: 16px 20px;
+        border-radius: 6px;
+        padding: 16px;
         color: {UPC_DARK};
-        font-size: 0.95rem;
+        font-size: 0.9rem;
         margin-bottom: 16px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.02);
     }}
 </style>
-""", unsafe_allow_html=True)""", unsafe_allow_html=True)
+""", unsafe_allow_html=True)
 
 
 # ─── Carga de datos ─────────────────────────────────────────────────────────────
@@ -206,11 +131,11 @@ def cargar_datos():
 df = cargar_datos()
 
 
-# ─── Helper: layout de gráficos con fondo blanco UPC ──────────────────────────
+# ─── Helper: layout de gráficos con fondo blanco ──────────────────────────────
 def upc_layout(fig, title="", height=None):
     updates = dict(
         paper_bgcolor=UPC_WHITE,
-        plot_bgcolor=UPC_LIGHT,
+        plot_bgcolor=UPC_WHITE,
         font=dict(color=UPC_DARK, family="Inter"),
         title=dict(text=title, font=dict(color=UPC_DARK, size=14, family="Inter"), x=0.01),
         xaxis=dict(gridcolor=UPC_GREY, linecolor=UPC_GREY, showline=True),
@@ -227,7 +152,6 @@ def upc_layout(fig, title="", height=None):
 # ─── Sidebar ──────────────────────────────────────────────────────────────────
 with st.sidebar:
     st.markdown(f"""
-    <div style='text-align:center; margin-bottom:24px;'>
         <div style='font-size:1.8rem; font-weight:800; color:{{UPC_DARK}}; letter-spacing:-0.02em;'>UPIE</div>
         <div style='font-size:0.85rem; color:#666; font-weight:500;'>Machine Learning for Business</div>
     </div>
@@ -262,7 +186,7 @@ with st.sidebar:
         fac_sel = "Todas"; seg_sel = "Todos"; gen_sel = "Todos"; nse_sel = "Todos"
 
     st.markdown("<hr style='border:1px solid #EAEAEA; margin:12px 0;'>", unsafe_allow_html=True)
-    st.caption("Prof. Istavay Orbegoso, PhD · EPG UPC · 2025")
+    st.caption("Prof. Istavay Orbegoso, PhD | EPG UPC | 2025")
 
 
 # ─── Filtros aplicados ─────────────────────────────────────────────────────────
@@ -278,15 +202,15 @@ else:
 # ══════════════════════════════════════════════════════════════════════════════
 # HEADER COMÚN
 # ══════════════════════════════════════════════════════════════════════════════
-st.markdown(f"""
-<div class="upc-header">
-    <div>
-        <h1>Universidad Privada Innovación y Excelencia (UPIE)</h1>
-        <p>Sistema Predictivo de Alerta Temprana · Gradient Boosting Classifier · Trabajo Final — Machine Learning for Business</p>
-        <p style="font-size: 0.85rem; color: rgba(255,255,255,0.7); margin-top: 12px; font-weight: 500;">
-            <b>Equipo:</b> Ana Távara · Patricia Muñoz · Victor Cuchca · Martin Vargas · Miriam Fallaque · Jean Pierre Nolasco · Diego Bielich
-        </p>
-    </div>
+st.markdown("""
+<div style="margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #E2E8F0;">
+    <h1 style="font-size: 1.8rem; font-weight: 600; margin: 0 0 8px 0; color: #31333F;">Universidad Privada Innovación y Excelencia (UPIE)</h1>
+    <p style="font-size: 0.95rem; color: #666; margin: 0 0 12px 0;">
+        Sistema Predictivo de Alerta Temprana | Gradient Boosting Classifier | Trabajo Final - Machine Learning for Business
+    </p>
+    <p style="font-size: 0.85rem; color: #888; margin: 0;">
+        <b>Equipo:</b> Ana Távara | Patricia Muñoz | Victor Cuchca | Martin Vargas | Miriam Fallaque | Jean Pierre Nolasco | Diego Bielich
+    </p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -309,7 +233,7 @@ if seccion == "📊 Resumen Ejecutivo":
             [f"{total:,}", f"{tasa_d:.1f}%", "80%", "0.6639", f"{mora_media:.0f} d"],
             ["Total Estudiantes", "Tasa Deserción", "Accuracy Modelo", "ROC-AUC Score", "Mora Promedio"],
         ):
-            col.markdown(f'<div class="kpi-card"><div class="kpi-val">{val}</div><div class="kpi-lbl">{lbl}</div></div>', unsafe_allow_html=True)
+            col.markdown(f'<div class="kpi-card"><div class="kpi-lbl">{lbl} <span style="color:#A0AEC0; font-size:12px;">(?)</span></div><div class="kpi-val">{val}</div></div>', unsafe_allow_html=True)
 
         st.markdown("<br>", unsafe_allow_html=True)
 

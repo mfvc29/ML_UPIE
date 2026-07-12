@@ -139,7 +139,7 @@ df = cargar_datos()
 
 # ─── Entrenamiento de Modelo (Cacheado) ──────────────────────────────────────
 @st.cache_resource(show_spinner=False)
-def train_model(data):
+def load_model_and_data(data):
     if data is None:
         return None, None, None
         
@@ -151,35 +151,18 @@ def train_model(data):
     X = df_model.drop(columns=drop_cols)
     y = df_model[target_col]
     
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
+    _, X_test, _, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
     
-    num_features = X.select_dtypes(include=['int64', 'float64']).columns
-    cat_features = X.select_dtypes(include=['object', 'category']).columns
-    
-    num_transformer = Pipeline(steps=[
-        ('imputer', SimpleImputer(strategy='median')),
-        ('scaler', StandardScaler())
-    ])
-    
-    cat_transformer = Pipeline(steps=[
-        ('imputer', SimpleImputer(strategy='constant', fill_value='Desconocido')),
-        ('onehot', OneHotEncoder(handle_unknown='ignore', sparse_output=False))
-    ])
-    
-    preprocessor = ColumnTransformer(transformers=[
-        ('num', num_transformer, num_features),
-        ('cat', cat_transformer, cat_features)
-    ])
-    
-    model = Pipeline(steps=[
-        ('preprocessor', preprocessor),
-        ('classifier', GradientBoostingClassifier(n_estimators=150, learning_rate=0.1, random_state=42))
-    ])
-    
-    model.fit(X_train, y_train)
+    try:
+        import joblib
+        model = joblib.load("model_gb.pkl")
+    except Exception as e:
+        st.error(f"Error cargando modelo: {e}")
+        model = None
+        
     return model, X_test, y_test
 
-model_gb, X_test, y_test = train_model(df)
+model_gb, X_test, y_test = load_model_and_data(df)
 
 
 # ─── Helper: layout de gráficos con fondo blanco ──────────────────────────────
@@ -255,9 +238,9 @@ else:
 # ══════════════════════════════════════════════════════════════════════════════
 st.markdown("""
 <div style="margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #E2E8F0;">
-    <h1 style="font-size: 1.8rem; font-weight: 600; margin: 0 0 8px 0; color: #31333F;">Universidad Privada Innovación y Excelencia (UPIE)</h1>
+    <h1 style="font-size: 1.8rem; font-weight: 600; margin: 0 0 8px 0; color: #31333F;">Caso de Estudio: Universidad Privada Innovación y Excelencia (UPIE)</h1>
     <p style="font-size: 0.95rem; color: #666; margin: 0 0 12px 0;">
-        Sistema Predictivo de Alerta Temprana | Gradient Boosting Classifier | Trabajo Final - Machine Learning for Business
+        Examen Final - Machine Learning for Business | Universidad Peruana de Ciencias Aplicadas (UPC) | Sistema Predictivo de Alerta Temprana (Gradient Boosting Classifier)
     </p>
     <div style="font-size: 0.85rem; color: #888; margin: 0;">
         <b>Equipo:</b>

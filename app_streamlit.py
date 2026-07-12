@@ -313,7 +313,11 @@ elif seccion == "Exploración del Dataset":
     st.markdown('<div class="section-title">Exploración del Dataset (EDA)</div>', unsafe_allow_html=True)
 
     if df_f is not None:
-        st.markdown(f"`{df_f.shape[0]:,}` filas · `{df_f.shape[1]}` columnas · Partición: **80% train / 20% test**")
+        st.markdown(f"""
+        <div style="background-color: #FAFAFA; border: 1px solid #E2E8F0; padding: 12px 16px; border-radius: 6px; color: #000000; font-weight: 500; font-size: 0.95rem; margin-bottom: 16px;">
+            {df_f.shape[0]:,} filas | {df_f.shape[1]} columnas | Partición: <b>80% train / 20% test</b>
+        </div>
+        """, unsafe_allow_html=True)
 
         with st.expander("Estadísticas Descriptivas Completas"):
             num_cols = df_f.select_dtypes(include=np.number).columns.tolist()

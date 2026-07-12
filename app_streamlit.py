@@ -324,7 +324,7 @@ if seccion == "Resumen Ejecutivo":
                      "V026_MoraPensionDias","V031_TasaAsistenciaPct",
                      "V045_IndiceEstresPercibido","V077_SegmentoRetencion","V075_DesercionBinario"]
         cols_exist = [c for c in cols_show if c in df_f.columns]
-        st.dataframe(df_f[cols_exist].head(10), use_container_width=True)
+        st.markdown(df_f[cols_exist].head(10).to_html(classes="upc-table"), unsafe_allow_html=True)
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -342,7 +342,7 @@ elif seccion == "Exploración del Dataset":
 
         with st.expander("Estadísticas Descriptivas Completas"):
             num_cols = df_f.select_dtypes(include=np.number).columns.tolist()
-            st.dataframe(df_f[num_cols].describe().T.round(2), use_container_width=True)
+            st.markdown(df_f[num_cols].describe().T.round(2).to_html(classes="upc-table"), unsafe_allow_html=True)
 
         st.markdown('<div class="section-title">Variables Clave del Notebook (Celda 7)</div>', unsafe_allow_html=True)
         c1, c2 = st.columns(2)
@@ -550,7 +550,7 @@ elif seccion == "Mapa de Calor de Riesgo":
             upc_layout(fig3, "Score Individual: Confidence vs. SHAP Mora", height=350)
             st.plotly_chart(fig3, use_container_width=True)
 
-            st.dataframe(df_scores.head(30), use_container_width=True)
+            st.markdown(df_scores.head(30).to_html(classes="upc-table"), unsafe_allow_html=True)
 
         with tab3:
             st.markdown("**Sentimiento NLP en Foros por Semana — V054_SentimientoForoNLP**")
@@ -640,8 +640,7 @@ elif seccion == "Resultados del Modelo":
                 "F1-Score": [report["0"]["f1-score"], report["1"]["f1-score"], report["macro avg"]["f1-score"], report["weighted avg"]["f1-score"]],
                 "Support": [int(report["0"]["support"]), int(report["1"]["support"]), int(report["macro avg"]["support"]), int(report["weighted avg"]["support"])],
             })
-            st.dataframe(rep.style.format({"Precision":"{:.2f}","Recall":"{:.2f}","F1-Score":"{:.2f}"}),
-                         use_container_width=True)
+            st.markdown(rep.to_html(classes="upc-table"), unsafe_allow_html=True)
     
             # Matriz de confusion
             st.markdown('<div class="section-title">Matriz de Confusion</div>', unsafe_allow_html=True)
@@ -783,7 +782,7 @@ elif seccion == "Política de Retención":
         seg_tbl.columns = ["Segmento","Total","Desertores","Mora Días","Estrés","Asistencia %","Confidence"]
         seg_tbl["Tasa %"] = (seg_tbl["Desertores"]/seg_tbl["Total"]*100).round(1)
         seg_tbl = seg_tbl.round(1)
-        st.dataframe(seg_tbl, use_container_width=True)
+        st.markdown(seg_tbl.to_html(classes="upc-table"), unsafe_allow_html=True)
 
         # Bubble chart segmentos
         fig_bub = px.scatter(seg_tbl, x="Asistencia %", y="Tasa %",

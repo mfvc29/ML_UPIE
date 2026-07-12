@@ -247,7 +247,8 @@ if seccion == "📊 Resumen Ejecutivo":
                 hole=0.55,
                 marker=dict(colors=[UPC_DARK, UPC_RED], line=dict(color="white", width=2)),
                 textinfo="label+percent",
-                textfont=dict(size=12),
+                textfont=dict(size=12, color="white"),
+                insidetextfont=dict(color="white")
             ))
             upc_layout(fig, "Distribución Variable Objetivo (V075)")
             fig.update_layout(showlegend=True)
@@ -261,7 +262,9 @@ if seccion == "📊 Resumen Ejecutivo":
                          "En seguimiento": "#fd7e14", "Vulnerable": UPC_RED}
             fig2 = px.bar(seg_c, x="Segmento", y="N", color="Segmento",
                           color_discrete_map=color_map,
+                          text="N",
                           labels={"N": "Estudiantes"})
+            fig2.update_traces(textfont=dict(color="black"), textposition="outside")
             upc_layout(fig2, "Segmentos de Retención (V077)")
             fig2.update_layout(showlegend=False)
             st.plotly_chart(fig2, use_container_width=True)

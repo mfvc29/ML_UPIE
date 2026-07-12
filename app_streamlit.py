@@ -138,8 +138,8 @@ def upc_layout(fig, title="", height=None):
         plot_bgcolor=UPC_WHITE,
         font=dict(color=UPC_DARK, family="Inter"),
         title=dict(text=title, font=dict(color=UPC_DARK, size=14, family="Inter"), x=0.01),
-        xaxis=dict(gridcolor=UPC_GREY, linecolor=UPC_GREY, showline=True),
-        yaxis=dict(gridcolor=UPC_GREY, linecolor=UPC_GREY, showline=True),
+        xaxis=dict(gridcolor=UPC_GREY, linecolor=UPC_GREY, showline=True, tickfont=dict(color="#000000"), title_font=dict(color="#000000")),
+        yaxis=dict(gridcolor=UPC_GREY, linecolor=UPC_GREY, showline=True, tickfont=dict(color="#000000"), title_font=dict(color="#000000")),
         margin=dict(l=20, r=20, t=40, b=20),
         legend=dict(font=dict(color=UPC_DARK)),
     )
@@ -160,12 +160,12 @@ with st.sidebar:
     seccion = st.radio(
         "Navegación",
         [
-            "📊 Resumen Ejecutivo",
-            "🔍 Exploración del Dataset",
-            "📈 Análisis de Deserción",
-            "🗺️ Mapa de Calor de Riesgo",
-            "🏆 Resultados del Modelo",
-            "🎯 Política de Retención",
+            "Resumen Ejecutivo",
+            "Exploración del Dataset",
+            "Análisis de Deserción",
+            "Mapa de Calor de Riesgo",
+            "Resultados del Modelo",
+            "Política de Retención",
         ],
         label_visibility="collapsed",
     )
@@ -217,8 +217,8 @@ st.markdown("""
 # ══════════════════════════════════════════════════════════════════════════════
 # 1. RESUMEN EJECUTIVO
 # ══════════════════════════════════════════════════════════════════════════════
-if seccion == "📊 Resumen Ejecutivo":
-    st.markdown('<div class="section-title">📊 Resumen Ejecutivo</div>', unsafe_allow_html=True)
+if seccion == "Resumen Ejecutivo":
+    st.markdown('<div class="section-title">Resumen Ejecutivo</div>', unsafe_allow_html=True)
 
     if df_f is not None:
         total      = len(df_f)
@@ -309,13 +309,13 @@ if seccion == "📊 Resumen Ejecutivo":
 # ══════════════════════════════════════════════════════════════════════════════
 # 2. EXPLORACIÓN DEL DATASET
 # ══════════════════════════════════════════════════════════════════════════════
-elif seccion == "🔍 Exploración del Dataset":
-    st.markdown('<div class="section-title">🔍 Exploración del Dataset (EDA)</div>', unsafe_allow_html=True)
+elif seccion == "Exploración del Dataset":
+    st.markdown('<div class="section-title">Exploración del Dataset (EDA)</div>', unsafe_allow_html=True)
 
     if df_f is not None:
         st.markdown(f"`{df_f.shape[0]:,}` filas · `{df_f.shape[1]}` columnas · Partición: **80% train / 20% test**")
 
-        with st.expander("📋 Estadísticas Descriptivas Completas"):
+        with st.expander("Estadísticas Descriptivas Completas"):
             num_cols = df_f.select_dtypes(include=np.number).columns.tolist()
             st.dataframe(df_f[num_cols].describe().T.round(2), use_container_width=True)
 
@@ -376,16 +376,13 @@ elif seccion == "🔍 Exploración del Dataset":
         upc_layout(fig5, "", height=380)
         st.plotly_chart(fig5, use_container_width=True)
 
-        # Descarga
-        csv_out = df_f.to_csv(index=False).encode("utf-8")
-        st.download_button("⬇️ Descargar datos filtrados (.csv)", csv_out, "UPIE_filtrado.csv", "text/csv")
 
 
 # ══════════════════════════════════════════════════════════════════════════════
 # 3. ANÁLISIS DE DESERCIÓN (equidad V007, V009, V012)
 # ══════════════════════════════════════════════════════════════════════════════
-elif seccion == "📈 Análisis de Deserción":
-    st.markdown('<div class="section-title">📈 Análisis de Deserción — Equidad por Género, NSE y Facultad</div>', unsafe_allow_html=True)
+elif seccion == "Análisis de Deserción":
+    st.markdown('<div class="section-title">Análisis de Deserción — Equidad por Género, NSE y Facultad</div>', unsafe_allow_html=True)
     st.markdown("""<div class="alert-grey">Rubrica: <b>Análisis de equidad</b> por V007 (Género), V009 (Nivel Socioeconómico) y V012 (Facultad) — criterio de excelencia del Notebook Colab.</div>""", unsafe_allow_html=True)
 
     if df_f is not None:
@@ -465,8 +462,8 @@ elif seccion == "📈 Análisis de Deserción":
 # ══════════════════════════════════════════════════════════════════════════════
 # 4. MAPA DE CALOR DE RIESGO
 # ══════════════════════════════════════════════════════════════════════════════
-elif seccion == "🗺️ Mapa de Calor de Riesgo":
-    st.markdown('<div class="section-title">🗺️ Mapa de Calor de Riesgo por Carrera / Ciclo / Cohorte</div>', unsafe_allow_html=True)
+elif seccion == "Mapa de Calor de Riesgo":
+    st.markdown('<div class="section-title">Mapa de Calor de Riesgo por Carrera / Ciclo / Cohorte</div>', unsafe_allow_html=True)
     st.markdown("""<div class="alert-grey">Rubrica: <b>Dashboard de alerta temprana</b> — Mapa de calor de riesgo por carrera/ciclo/cohorte + scores individuales + sentimiento NLP foros + drift y confidence.</div>""", unsafe_allow_html=True)
 
     if df_f is not None:
@@ -584,8 +581,8 @@ elif seccion == "🗺️ Mapa de Calor de Riesgo":
 # ══════════════════════════════════════════════════════════════════════════════
 # 5. RESULTADOS DEL MODELO
 # ══════════════════════════════════════════════════════════════════════════════
-elif seccion == "🏆 Resultados del Modelo":
-    st.markdown('<div class="section-title">🏆 Resultados del Modelo — Gradient Boosting Classifier</div>', unsafe_allow_html=True)
+elif seccion == "Resultados del Modelo":
+    st.markdown('<div class="section-title">Resultados del Modelo — Gradient Boosting Classifier</div>', unsafe_allow_html=True)
 
     c1, c2, c3, c4 = st.columns(4)
     for col, val, lbl in zip([c1,c2,c3,c4],
@@ -686,8 +683,8 @@ elif seccion == "🏆 Resultados del Modelo":
 # ══════════════════════════════════════════════════════════════════════════════
 # 6. POLÍTICA DE RETENCIÓN
 # ══════════════════════════════════════════════════════════════════════════════
-elif seccion == "🎯 Política de Retención":
-    st.markdown('<div class="section-title">🎯 Política de Retención — Executive Memo & Plan 90 Días</div>', unsafe_allow_html=True)
+elif seccion == "Política de Retención":
+    st.markdown('<div class="section-title">Política de Retención — Executive Memo & Plan 90 Días</div>', unsafe_allow_html=True)
     st.markdown("""<div class="alert-grey">Rubrica: <b>Executive Memo (máx. 2 pp.)</b> — Causa raíz, evidencia cuantificada, política de retención, VAN/ROI por segmento, riesgos, plan 90 días. Lenguaje de Rectoría.</div>""", unsafe_allow_html=True)
 
     c1, c2 = st.columns(2)
@@ -727,7 +724,7 @@ elif seccion == "🎯 Política de Retención":
             <span class="session-badge">S5, S8 · MLflow tracking + drift V070</span>
         </div>
         <div class="deliverable-row">
-            <h4>📊 Plan 90 Días — Rectoría</h4>
+            <h4>Plan 90 Días — Rectoría</h4>
             <p><b>Días 1–30:</b> Desplegar dashboard de alerta. Identificar Top 200 estudiantes vulnerables.</p>
             <p><b>Días 31–60:</b> Activar protocolos financiero (refinanciamiento) y académico (tutoría).</p>
             <p><b>Días 61–90:</b> Medir reducción de mora. Re-evaluar con datos actualizados. Publicar Model Card SUNEDU.</p>

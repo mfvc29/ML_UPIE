@@ -140,6 +140,7 @@ df = cargar_datos()
 # ─── Entrenamiento de Modelo (Cacheado) ──────────────────────────────────────
 @st.cache_resource(show_spinner=False)
 def train_model(data):
+    import gc
     if data is None:
         return None, None, None
         
@@ -150,11 +151,13 @@ def train_model(data):
     drop_cols = [col for col in leakage_cols if col in df_model.columns] + [target_col]
     X = df_model.drop(columns=drop_cols)
     y = df_model[target_col]
+    del df_model
     
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
+    del X, y
     
-    num_features = X.select_dtypes(include=['int64', 'float64']).columns
-    cat_features = X.select_dtypes(include=['object', 'category']).columns
+    num_features = X_train.select_dtypes(include=['int64', 'float64']).columns
+    cat_features = X_train.select_dtypes(include=['object', 'category', 'str']).columns
     
     num_transformer = Pipeline(steps=[
         ('imputer', SimpleImputer(strategy='median')),
@@ -163,7 +166,7 @@ def train_model(data):
     
     cat_transformer = Pipeline(steps=[
         ('imputer', SimpleImputer(strategy='constant', fill_value='Desconocido')),
-        ('onehot', OneHotEncoder(handle_unknown='ignore', sparse_output=False))
+        ('onehot', OneHotEncoder(handle_unknown='ignore', sparse_output=True))
     ])
     
     preprocessor = ColumnTransformer(transformers=[
@@ -173,10 +176,15 @@ def train_model(data):
     
     model = Pipeline(steps=[
         ('preprocessor', preprocessor),
-        ('classifier', GradientBoostingClassifier(n_estimators=150, learning_rate=0.1, random_state=42))
+        ('classifier', GradientBoostingClassifier(
+            n_estimators=50, learning_rate=0.1, max_depth=3, random_state=42,
+            subsample=0.8, max_features='sqrt'
+        ))
     ])
     
     model.fit(X_train, y_train)
+    del X_train, y_train
+    gc.collect()
     return model, X_test, y_test
 
 model_gb, X_test, y_test = train_model(df)

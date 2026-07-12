@@ -139,7 +139,7 @@ df = cargar_datos()
 
 # ─── Entrenamiento de Modelo (Cacheado) ──────────────────────────────────────
 @st.cache_resource(show_spinner=False)
-def load_model_and_data(data):
+def train_model(data):
     if data is None:
         return None, None, None
         
@@ -151,18 +151,35 @@ def load_model_and_data(data):
     X = df_model.drop(columns=drop_cols)
     y = df_model[target_col]
     
-    _, X_test, _, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
     
-    try:
-        import joblib
-        model = joblib.load("model_gb.pkl")
-    except Exception as e:
-        st.error(f"Error cargando modelo: {e}")
-        model = None
-        
+    num_features = X.select_dtypes(include=['int64', 'float64']).columns
+    cat_features = X.select_dtypes(include=['object', 'category']).columns
+    
+    num_transformer = Pipeline(steps=[
+        ('imputer', SimpleImputer(strategy='median')),
+        ('scaler', StandardScaler())
+    ])
+    
+    cat_transformer = Pipeline(steps=[
+        ('imputer', SimpleImputer(strategy='constant', fill_value='Desconocido')),
+        ('onehot', OneHotEncoder(handle_unknown='ignore', sparse_output=False))
+    ])
+    
+    preprocessor = ColumnTransformer(transformers=[
+        ('num', num_transformer, num_features),
+        ('cat', cat_transformer, cat_features)
+    ])
+    
+    model = Pipeline(steps=[
+        ('preprocessor', preprocessor),
+        ('classifier', GradientBoostingClassifier(n_estimators=150, learning_rate=0.1, random_state=42))
+    ])
+    
+    model.fit(X_train, y_train)
     return model, X_test, y_test
 
-model_gb, X_test, y_test = load_model_and_data(df)
+model_gb, X_test, y_test = train_model(df)
 
 
 # ─── Helper: layout de gráficos con fondo blanco ──────────────────────────────

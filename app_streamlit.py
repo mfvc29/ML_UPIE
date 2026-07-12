@@ -74,12 +74,7 @@ st.markdown(f"""
         font-weight: 400;
     }}
     .upc-logo-circle {{
-        background: white;
-        border-radius: 50%;
-        width: 64px; height: 64px;
-        display: flex; align-items: center; justify-content: center;
-        font-size: 2.2rem; flex-shrink: 0;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        display: none;
     }}
 
     /* Tarjetas de métricas más limpias */
@@ -233,11 +228,8 @@ def upc_layout(fig, title="", height=None):
 with st.sidebar:
     st.markdown(f"""
     <div style='text-align:center; margin-bottom:24px;'>
-        <div style='background:linear-gradient(135deg, {{UPC_RED}} 0%, #b71c1c 100%); border-radius:50%; width:64px; height:64px;
-                    margin:0 auto 12px auto; display:flex; align-items:center;
-                    justify-content:center; font-size:1.8rem; box-shadow: 0 4px 10px rgba(225,37,27,0.2);'>🎓</div>
-        <div style='font-size:1.2rem; font-weight:800; color:{{UPC_DARK}}; letter-spacing:-0.02em;'>UPIE</div>
-        <div style='font-size:0.8rem; color:#666; font-weight:500;'>Machine Learning for Business</div>
+        <div style='font-size:1.8rem; font-weight:800; color:{{UPC_DARK}}; letter-spacing:-0.02em;'>UPIE</div>
+        <div style='font-size:0.85rem; color:#666; font-weight:500;'>Machine Learning for Business</div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -250,7 +242,6 @@ with st.sidebar:
             "🗺️ Mapa de Calor de Riesgo",
             "🏆 Resultados del Modelo",
             "🎯 Política de Retención",
-            "📋 Entregables del Curso",
         ],
         label_visibility="collapsed",
     )
@@ -289,10 +280,12 @@ else:
 # ══════════════════════════════════════════════════════════════════════════════
 st.markdown(f"""
 <div class="upc-header">
-    <div class="upc-logo-circle">🎓</div>
     <div>
         <h1>Universidad Privada Innovación y Excelencia (UPIE)</h1>
         <p>Sistema Predictivo de Alerta Temprana · Gradient Boosting Classifier · Trabajo Final — Machine Learning for Business</p>
+        <p style="font-size: 0.85rem; color: rgba(255,255,255,0.7); margin-top: 12px; font-weight: 500;">
+            <b>Equipo:</b> Ana Távara · Patricia Muñoz · Victor Cuchca · Martin Vargas · Miriam Fallaque · Jean Pierre Nolasco · Diego Bielich
+        </p>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -848,102 +841,3 @@ elif seccion == "🎯 Política de Retención":
         upc_layout(fig_bub, "Segmentos: Asistencia vs. Tasa de Deserción", height=380)
         st.plotly_chart(fig_bub, use_container_width=True)
 
-
-# ══════════════════════════════════════════════════════════════════════════════
-# 7. ENTREGABLES DEL CURSO
-# ══════════════════════════════════════════════════════════════════════════════
-elif seccion == "📋 Entregables del Curso":
-    st.markdown('<div class="section-title">📋 Entregables — Criterios de Excelencia</div>', unsafe_allow_html=True)
-    st.markdown("""<div class="alert-grey">Mapa de entregables del Trabajo Final según la rúbrica del curso
-    <b>Machine Learning for Business</b> · Prof. Istavay Orbegoso, PhD · EPG UPC 2025.</div>""", unsafe_allow_html=True)
-
-    entregables = [
-        {
-            "emoji": "💻",
-            "titulo": "Notebook Colab Reproducible",
-            "criterio": ("End-to-end sin rutas locales. Pipeline sklearn con imputación (mediana/constante), "
-                         "escalado StandardScaler y OneHotEncoder. PCA (V067_RiesgoDesercionPCA1). "
-                         "ANN+LSTM con arquitectura explícita. NLP en foros (V054_SentimientoForoNLP). "
-                         "MLflow tracking de experimentos. Análisis de equidad por V007 (Género), "
-                         "V009 (NSE) y V012 (Facultad). Leakage map documentado."),
-            "sesion": "S1–S8 (todas las sesiones)",
-        },
-        {
-            "emoji": "📝",
-            "titulo": "Executive Memo (máx. 2 pp.)",
-            "criterio": ("Causa raíz de la deserción con evidencia cuantificada. "
-                         "Política de retención recomendada. VAN/ROI por segmento de retención. "
-                         "Riesgos identificados y plan de acción a 90 días. "
-                         "Lenguaje de Rectoría: traducción financiera en soles recuperados "
-                         "por punto porcentual de retención."),
-            "sesion": "S1, S8",
-        },
-        {
-            "emoji": "📊",
-            "titulo": "Dashboard de Alerta Temprana",
-            "criterio": ("Mapa de calor de riesgo por carrera/ciclo/cohorte. "
-                         "Scores individuales (V072_ConfidenceScore + V074_SHAP_MoraPension). "
-                         "Sentimiento NLP foros por semana (V054). "
-                         "Drift (V070_DriftScoreCohorte) y Confidence Score. "
-                         "Implementado en Plotly / Streamlit."),
-            "sesion": "S2, S5, S8",
-        },
-        {
-            "emoji": "🏛️",
-            "titulo": "Model Card Regulatorio + SUNEDU",
-            "criterio": ("Objetivo del modelo, población objetivo, variables utilizadas con leakage map. "
-                         "AUC por facultad (equidad institucional). Equidad por género (V007) y NSE (V009). "
-                         "PSI por cohorte (V070). Limitaciones explícitas del modelo. "
-                         "Plan de monitoreo y re-entrenamiento semestral."),
-            "sesion": "S7–S8",
-        },
-        {
-            "emoji": "🎞️",
-            "titulo": "Board Deck (10 Slides)",
-            "criterio": ("Storytelling ejecutivo con Método del Caso: diagnóstico (definición del problema) "
-                         "→ modelo teórico → segmentación → modelo estadístico → política → decisión. "
-                         "Traducción financiera: soles recuperados por punto porcentual de retención. "
-                         "Estructura: S1 Reto de Negocio · S2 Datos · S3 Modelo · S4 Resultados · "
-                         "S5 Equidad · S6 Retención · S7 ROI · S8 Riesgos · S9 Plan 90d · S10 Decisión."),
-            "sesion": "S1, S8",
-        },
-        {
-            "emoji": "📜",
-            "titulo": "Acta de Comité de Rectoría",
-            "criterio": ("Postura documentada de cada rol del Comité. "
-                         "Conflictos identificados y resueltos con evidencia del modelo. "
-                         "Política de retención consensuada. "
-                         "Métricas de seguimiento definidas por ciclo académico."),
-            "sesion": "S8",
-        },
-    ]
-
-    for e in entregables:
-        st.markdown(f"""
-        <div class="deliverable-row">
-            <h4>{e["emoji"]} {e["titulo"]}</h4>
-            <p>{e["criterio"]}</p>
-            <span class="session-badge">📅 {e["sesion"]}</span>
-        </div>
-        """, unsafe_allow_html=True)
-
-    # Progreso visual
-    st.markdown('<div class="section-title">Estado del Proyecto</div>', unsafe_allow_html=True)
-    progress_data = {
-        "Entregable": ["Notebook Colab","Executive Memo","Dashboard Streamlit","Model Card","Board Deck","Acta Comité"],
-        "Completado %": [85, 70, 95, 50, 65, 40],
-    }
-    df_prog = pd.DataFrame(progress_data)
-    fig_prog = px.bar(df_prog, y="Entregable", x="Completado %", orientation="h",
-                      color="Completado %",
-                      color_continuous_scale=[[0,UPC_RED],[0.5,"#f97316"],[1,"#28a745"]],
-                      text="Completado %", range_x=[0,100])
-    fig_prog.update_traces(texttemplate="%{text}%", textposition="outside")
-    upc_layout(fig_prog, "Avance por Entregable", height=320)
-    fig_prog.update_layout(coloraxis_showscale=False)
-    st.plotly_chart(fig_prog, use_container_width=True)
-
-    st.markdown(f"""<div class="alert-red">
-    <b>Integrantes del equipo:</b> Ana Távara · Patricia Muñoz · Victor Cuchca ·
-    Martin Vargas · Miriam Fallaque · Jean Pierre Nolasco · Diego Bielich
-    </div>""", unsafe_allow_html=True)

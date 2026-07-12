@@ -273,7 +273,7 @@ if seccion == "Resumen Ejecutivo":
             ))
             upc_layout(fig, "Distribución Variable Objetivo (V075)")
             fig.update_layout(showlegend=True)
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width='stretch')
 
         with col_b:
             # Barras por Segmento
@@ -288,7 +288,7 @@ if seccion == "Resumen Ejecutivo":
             fig2.update_traces(textfont=dict(color="black"), textposition="outside")
             upc_layout(fig2, "Segmentos de Retención (V077)")
             fig2.update_layout(showlegend=False)
-            st.plotly_chart(fig2, use_container_width=True)
+            st.plotly_chart(fig2, width='stretch')
 
         # Contexto
         st.markdown('<hr class="upc">', unsafe_allow_html=True)
@@ -355,7 +355,7 @@ elif seccion == "Exploración del Dataset":
                          labels={"V026_MoraPensionDias": "Mora (días)", "V075_DesercionBinario": "Desertor"})
             upc_layout(fig, "Deserción vs Mora en Pensión (V026)")
             fig.update_layout(showlegend=False)
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width='stretch')
 
         with c2:
             # Asistencia vs Deserción
@@ -365,7 +365,7 @@ elif seccion == "Exploración del Dataset":
                           labels={"V031_TasaAsistenciaPct": "Asistencia (%)", "V075_DesercionBinario": "Desertor"})
             upc_layout(fig2, "Deserción vs Tasa de Asistencia (V031)")
             fig2.update_layout(showlegend=False)
-            st.plotly_chart(fig2, use_container_width=True)
+            st.plotly_chart(fig2, width='stretch')
 
         c3, c4 = st.columns(2)
         with c3:
@@ -376,7 +376,7 @@ elif seccion == "Exploración del Dataset":
                           labels={"V045_IndiceEstresPercibido": "Índice Estrés", "V075_DesercionBinario": "Desertor"})
             upc_layout(fig3, "Deserción vs Índice de Estrés Percibido (V045)")
             fig3.update_layout(showlegend=False)
-            st.plotly_chart(fig3, use_container_width=True)
+            st.plotly_chart(fig3, width='stretch')
 
         with c4:
             # PPA vs Deserción (celda 7)
@@ -386,21 +386,21 @@ elif seccion == "Exploración del Dataset":
                           labels={"V017_PPA": "PPA", "V075_DesercionBinario": "Desertor"})
             upc_layout(fig4, "Deserción vs PPA Acumulado (V017)")
             fig4.update_layout(showlegend=False)
-            st.plotly_chart(fig4, use_container_width=True)
+            st.plotly_chart(fig4, width='stretch')
 
         # Scatter: Mora vs Asistencia (color deserción)
         st.markdown('<div class="section-title">Relación Mora – Asistencia por Perfil de Deserción</div>', unsafe_allow_html=True)
-        fig5 = px.scatter(df_f.sample(min(1500, len(df_f))),
+        fig5 = px.scatter(df_f,
                           x="V026_MoraPensionDias", y="V031_TasaAsistenciaPct",
                           color="V075_DesercionBinario",
                           color_discrete_map={0: UPC_DARK, 1: UPC_RED},
                           opacity=0.5,
-                          render_mode="svg",
+                          
                           labels={"V026_MoraPensionDias": "Mora en Pensión (días)",
                                   "V031_TasaAsistenciaPct": "Asistencia (%)",
                                   "V075_DesercionBinario": "Desertor"})
         upc_layout(fig5, "", height=380)
-        st.plotly_chart(fig5, use_container_width=True)
+        st.plotly_chart(fig5, width='stretch')
 
 
 
@@ -426,7 +426,7 @@ elif seccion == "Análisis de Deserción":
             fig.update_traces(texttemplate="%{text:.1f}%", textposition="outside")
             upc_layout(fig, "Tasa de Deserción por Género (V007)", height=320)
             fig.update_layout(showlegend=False)
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width='stretch')
 
         with c2:
             # Por NSE (V009)
@@ -441,7 +441,7 @@ elif seccion == "Análisis de Deserción":
             fig2.update_traces(texttemplate="%{text:.1f}%", textposition="outside")
             upc_layout(fig2, "Tasa de Deserción por NSE (V009)", height=320)
             fig2.update_layout(coloraxis_showscale=False, showlegend=False)
-            st.plotly_chart(fig2, use_container_width=True)
+            st.plotly_chart(fig2, width='stretch')
 
         with c3:
             # PCA1 (V067) distribución
@@ -451,7 +451,7 @@ elif seccion == "Análisis de Deserción":
                                 labels={"V067_RiesgoDesercionPCA1": "PCA1 Riesgo (V067)",
                                         "V075_DesercionBinario": "Desertor"})
             upc_layout(fig3, "Distribución PCA de Riesgo (V067)", height=320)
-            st.plotly_chart(fig3, use_container_width=True)
+            st.plotly_chart(fig3, width='stretch')
 
         # Por Facultad (V012) — horizontal
         st.markdown('<div class="section-title">Deserción y Equidad por Facultad (V012)</div>', unsafe_allow_html=True)
@@ -466,7 +466,7 @@ elif seccion == "Análisis de Deserción":
         fig4.update_traces(texttemplate="%{text:.1f}%", textposition="outside")
         upc_layout(fig4, "", height=340)
         fig4.update_layout(coloraxis_showscale=False)
-        st.plotly_chart(fig4, use_container_width=True)
+        st.plotly_chart(fig4, width='stretch')
 
         # Correlaciones con target (celda 8 del notebook)
         st.markdown('<div class="section-title">Matriz de Correlación con Deserción (V075) — Celda 8 del Notebook</div>', unsafe_allow_html=True)
@@ -482,7 +482,7 @@ elif seccion == "Análisis de Deserción":
                       text="Val")
         fig5.update_traces(texttemplate="%{text:.3f}", textposition="outside")
         upc_layout(fig5, "Top 20 Variables Correlacionadas con Deserción", height=520)
-        st.plotly_chart(fig5, use_container_width=True)
+        st.plotly_chart(fig5, width='stretch')
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -515,7 +515,7 @@ elif seccion == "Mapa de Calor de Riesgo":
                 font=dict(color=UPC_DARK), height=520,
                 xaxis=dict(side="top"), margin=dict(l=150,t=40,r=20,b=20),
             )
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width='stretch')
 
             # Por Cohorte
             st.markdown('<div class="section-title">Tasa de Deserción por Cohorte de Ingreso (V003)</div>', unsafe_allow_html=True)
@@ -527,7 +527,7 @@ elif seccion == "Mapa de Calor de Riesgo":
                            color_discrete_sequence=[UPC_RED],
                            labels={"Tasa %": "Tasa Deserción (%)"})
             upc_layout(fig2, "Drift de Deserción por Cohorte (V003)", height=300)
-            st.plotly_chart(fig2, use_container_width=True)
+            st.plotly_chart(fig2, width='stretch')
 
         with tab2:
             st.markdown("**Scores de riesgo individuales (ConfidenceScore V072 + SHAP Mora V074)**")
@@ -548,7 +548,7 @@ elif seccion == "Mapa de Calor de Riesgo":
                                       "V074_SHAP_MoraPension": "SHAP Mora Pensión (V074)",
                                       "V075_DesercionBinario": "Desertor"})
             upc_layout(fig3, "Score Individual: Confidence vs. SHAP Mora", height=350)
-            st.plotly_chart(fig3, use_container_width=True)
+            st.plotly_chart(fig3, width='stretch')
 
             st.markdown(df_scores.head(30).to_html(classes="upc-table"), unsafe_allow_html=True)
 
@@ -564,7 +564,7 @@ elif seccion == "Mapa de Calor de Riesgo":
                                   "V077_SegmentoRetencion":"Segmento"})
             upc_layout(fig4, "Sentimiento Foros NLP por Segmento de Retención", height=350)
             fig4.update_layout(showlegend=False)
-            st.plotly_chart(fig4, use_container_width=True)
+            st.plotly_chart(fig4, width='stretch')
 
             # Tokens por grupo
             fig5 = px.scatter(df_f.sample(min(1500,len(df_f))),
@@ -576,7 +576,7 @@ elif seccion == "Mapa de Calor de Riesgo":
                                       "V054_SentimientoForoNLP":"Sentimiento NLP (V054)",
                                       "V075_DesercionBinario":"Desertor"})
             upc_layout(fig5, "Tokens vs Sentimiento NLP por Perfil de Deserción", height=300)
-            st.plotly_chart(fig5, use_container_width=True)
+            st.plotly_chart(fig5, width='stretch')
 
         with tab4:
             st.markdown("**PSI / Drift por Cohorte (V070) y Confidence Score (V072)**")
@@ -588,7 +588,7 @@ elif seccion == "Mapa de Calor de Riesgo":
                                     labels={"V070_DriftScoreCohorte":"Drift Score Cohorte (V070)",
                                             "V075_DesercionBinario":"Desertor"})
                 upc_layout(fig6, "Distribución Drift Score (V070)", height=320)
-                st.plotly_chart(fig6, use_container_width=True)
+                st.plotly_chart(fig6, width='stretch')
             with c2:
                 fig7 = px.histogram(df_f, x="V072_ConfidenceScoreDesercion", color="V075_DesercionBinario",
                                     color_discrete_map={0:UPC_DARK,1:UPC_RED},
@@ -596,7 +596,7 @@ elif seccion == "Mapa de Calor de Riesgo":
                                     labels={"V072_ConfidenceScoreDesercion":"Confidence Score (V072)",
                                             "V075_DesercionBinario":"Desertor"})
                 upc_layout(fig7, "Distribución Confidence Score (V072)", height=320)
-                st.plotly_chart(fig7, use_container_width=True)
+                st.plotly_chart(fig7, width='stretch')
 
             st.markdown(f"""<div class="alert-red">
             <b>Plan de Monitoreo (SUNEDU):</b> Recalibrar el modelo cada semestre usando PSI (Population Stability Index).
@@ -655,7 +655,7 @@ elif seccion == "Resultados del Modelo":
             ))
             fig_cm.update_layout(paper_bgcolor=UPC_WHITE, plot_bgcolor=UPC_WHITE,
                                   font=dict(color=UPC_DARK), height=260, margin=dict(l=10,r=10,t=10,b=10))
-            st.plotly_chart(fig_cm, use_container_width=True)
+            st.plotly_chart(fig_cm, width='stretch')
     
             # Curva ROC
             st.markdown('<div class="section-title">Curva ROC</div>', unsafe_allow_html=True)
@@ -667,7 +667,7 @@ elif seccion == "Resultados del Modelo":
             upc_layout(fig_roc, "Curva ROC - Gradient Boosting Classifier", height=320)
             fig_roc.update_layout(xaxis_title="FPR", yaxis_title="TPR",
                                   legend=dict(font=dict(color=UPC_DARK)))
-            st.plotly_chart(fig_roc, use_container_width=True)
+            st.plotly_chart(fig_roc, width='stretch')
 
         with col_b:
             # Feature Importance (del modelo real)
@@ -686,7 +686,7 @@ elif seccion == "Resultados del Modelo":
             ))
             upc_layout(fig_imp, "Top 15 Predictores de Desercion", height=480)
             fig_imp.update_layout(xaxis_title="Importancia Relativa")
-            st.plotly_chart(fig_imp, use_container_width=True)
+            st.plotly_chart(fig_imp, width='stretch')
 
         # AUC por Facultad (Model Card SUNEDU)
         st.markdown('<div class="section-title">AUC por Facultad (Model Card Regulatorio)</div>', unsafe_allow_html=True)
@@ -701,7 +701,7 @@ elif seccion == "Resultados del Modelo":
             fig_auc.update_traces(texttemplate="%{text:.3f}", textposition="outside")
             upc_layout(fig_auc, "ROC-AUC por Facultad", height=320)
             fig_auc.update_layout(coloraxis_showscale=False)
-            st.plotly_chart(fig_auc, use_container_width=True)
+            st.plotly_chart(fig_auc, width='stretch')
 
     st.markdown(f"""<div class="alert-red">
     <b>Nota metodológica (Rúbrica):</b> El bajo Recall en desertores (5%) evidencia el desbalanceo de clases (80:20).
@@ -793,5 +793,5 @@ elif seccion == "Política de Retención":
                              labels={"Asistencia %":"Asistencia Promedio (%)","Tasa %":"Tasa Deserción (%)"})
         fig_bub.update_traces(textposition="top center")
         upc_layout(fig_bub, "Segmentos: Asistencia vs. Tasa de Deserción", height=380)
-        st.plotly_chart(fig_bub, use_container_width=True)
+        st.plotly_chart(fig_bub, width='stretch')
 

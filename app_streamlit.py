@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
-import joblib
+import json
 
 # ─── Configuración ─────────────────────────────────────────────────────────────
 st.set_page_config(
@@ -135,7 +135,8 @@ df = cargar_datos()
 @st.cache_resource(show_spinner=False)
 def load_model_results():
     try:
-        return joblib.load("model_results.joblib")
+        with open("model_results.json", "r") as f:
+            return json.load(f)
     except Exception:
         return None
 

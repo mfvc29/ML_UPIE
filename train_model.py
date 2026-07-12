@@ -82,6 +82,8 @@ top_idx = np.argsort(importances)[-15:]
 top_features = [feat_names[i] for i in top_idx]
 top_importances = [float(importances[i]) for i in top_idx]
 
+import json
+
 results = {
     'accuracy': float(acc),
     'roc_auc': float(roc_val),
@@ -96,8 +98,9 @@ results = {
     'top_importances': top_importances,
 }
 
-print("Guardando resultados en model_results.joblib ...")
-joblib.dump(results, "model_results.joblib", compress=3, protocol=4)
+print("Guardando resultados en model_results.json ...")
+with open("model_results.json", "w") as f:
+    json.dump(results, f)
 
 print(f"Accuracy: {acc*100:.1f}%")
 print(f"ROC-AUC:  {roc_val:.4f}")

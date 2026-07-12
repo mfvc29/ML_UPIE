@@ -12,12 +12,12 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# ─── Paleta UPC ────────────────────────────────────────────────────────────────
+# ─── Paleta UPC Refinada (Tema Claro) ───────────────────────────────────────────
 UPC_RED     = "#E1251B"
-UPC_DARK    = "#404041"
-UPC_LIGHT   = "#F5F5F5"
-UPC_RED_L   = "#f9d3d2"   # rojo muy claro para fondos
-UPC_GREY    = "#D0D0D0"
+UPC_DARK    = "#2D2D2D"
+UPC_LIGHT   = "#F8F9FA"
+UPC_RED_L   = "#FDF2F2"   # rojo muy claro para fondos
+UPC_GREY    = "#EAEAEA"
 UPC_WHITE   = "#FFFFFF"
 
 # ─── CSS con identidad UPC ────────────────────────────────────────────────────
@@ -27,146 +27,177 @@ st.markdown(f"""
 
     html, body, [class*="css"] {{
         font-family: 'Inter', sans-serif;
-        background-color: {UPC_WHITE};
+        background-color: {UPC_LIGHT};
         color: {UPC_DARK};
     }}
 
-    /* Fondo blanco */
-    .stApp {{ background-color: {UPC_WHITE}; }}
+    /* Fondo general más claro y suave */
+    .stApp {{ background-color: {UPC_LIGHT}; }}
 
-    /* Sidebar */
+    /* Sidebar claro y elegante */
     section[data-testid="stSidebar"] {{
-        background-color: {UPC_DARK};
-        border-right: 3px solid {UPC_RED};
+        background-color: {UPC_WHITE};
+        border-right: 1px solid {UPC_GREY};
+        box-shadow: 2px 0 10px rgba(0,0,0,0.02);
     }}
-    section[data-testid="stSidebar"] * {{ color: {UPC_WHITE} !important; }}
-    section[data-testid="stSidebar"] .stRadio label {{ color: {UPC_WHITE} !important; }}
-    section[data-testid="stSidebar"] .stSelectbox label {{ color: {UPC_WHITE} !important; }}
+    section[data-testid="stSidebar"] .stRadio label,
+    section[data-testid="stSidebar"] .stSelectbox label,
+    section[data-testid="stSidebar"] p,
+    section[data-testid="stSidebar"] div,
+    section[data-testid="stSidebar"] span {{ 
+        color: {UPC_DARK} !important; 
+    }}
 
-    /* Encabezado UPC */
+    /* Encabezado UPC Modernizado */
     .upc-header {{
-        background: linear-gradient(90deg, {UPC_RED} 0%, #b71c1c 100%);
-        border-radius: 12px;
-        padding: 22px 32px;
-        margin-bottom: 24px;
+        background: linear-gradient(135deg, {UPC_RED} 0%, #b71c1c 100%);
+        border-radius: 16px;
+        padding: 24px 36px;
+        margin-bottom: 28px;
         display: flex;
         align-items: center;
-        gap: 20px;
+        gap: 24px;
+        box-shadow: 0 8px 24px rgba(225,37,27,0.15);
     }}
     .upc-header h1 {{
         color: white !important;
-        font-size: 1.8rem;
+        font-size: 2rem;
         font-weight: 800;
         margin: 0;
         line-height: 1.2;
+        letter-spacing: -0.02em;
     }}
     .upc-header p {{
-        color: rgba(255,255,255,0.85);
-        font-size: 0.95rem;
-        margin: 4px 0 0 0;
+        color: rgba(255,255,255,0.9);
+        font-size: 1rem;
+        margin: 6px 0 0 0;
+        font-weight: 400;
     }}
     .upc-logo-circle {{
         background: white;
         border-radius: 50%;
-        width: 56px; height: 56px;
+        width: 64px; height: 64px;
         display: flex; align-items: center; justify-content: center;
-        font-size: 1.8rem; flex-shrink: 0;
+        font-size: 2.2rem; flex-shrink: 0;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }}
 
-    /* Tarjetas de métricas */
+    /* Tarjetas de métricas más limpias */
     .kpi-card {{
         background: {UPC_WHITE};
-        border: 1.5px solid {UPC_GREY};
-        border-top: 4px solid {UPC_RED};
-        border-radius: 10px;
-        padding: 18px 20px;
+        border: 1px solid {UPC_GREY};
+        border-radius: 12px;
+        padding: 20px;
         text-align: center;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-        transition: box-shadow 0.2s;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        transition: transform 0.2s, box-shadow 0.2s;
+        position: relative;
+        overflow: hidden;
     }}
-    .kpi-card:hover {{ box-shadow: 0 6px 20px rgba(225,37,27,0.15); }}
+    .kpi-card::before {{
+        content: '';
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 4px;
+        background: {UPC_RED};
+    }}
+    .kpi-card:hover {{ 
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(225,37,27,0.1); 
+    }}
     .kpi-val {{
-        font-size: 2.1rem;
+        font-size: 2.4rem;
         font-weight: 800;
         color: {UPC_RED};
-        line-height: 1;
+        line-height: 1.1;
+        margin-bottom: 4px;
     }}
     .kpi-lbl {{
-        font-size: 0.78rem;
-        color: {UPC_DARK};
-        margin-top: 6px;
+        font-size: 0.8rem;
+        color: #666;
         font-weight: 600;
         text-transform: uppercase;
-        letter-spacing: 0.04em;
+        letter-spacing: 0.05em;
     }}
 
-    /* Tabla de entregables */
+    /* Tabla de entregables refinada */
     .deliverable-row {{
         background: {UPC_WHITE};
         border: 1px solid {UPC_GREY};
-        border-left: 5px solid {UPC_RED};
-        border-radius: 8px;
-        padding: 14px 18px;
-        margin-bottom: 10px;
-        box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+        border-left: 4px solid {UPC_RED};
+        border-radius: 10px;
+        padding: 18px 22px;
+        margin-bottom: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.02);
     }}
     .deliverable-row h4 {{
-        color: {UPC_RED};
-        margin: 0 0 6px 0;
-        font-size: 0.95rem;
+        color: {UPC_DARK};
+        margin: 0 0 8px 0;
+        font-size: 1.05rem;
         font-weight: 700;
     }}
     .deliverable-row p {{
-        color: {UPC_DARK};
-        font-size: 0.82rem;
+        color: #555;
+        font-size: 0.9rem;
         margin: 0;
-        line-height: 1.5;
+        line-height: 1.6;
     }}
     .session-badge {{
         background: {UPC_RED_L};
         color: {UPC_RED};
-        border-radius: 999px;
-        padding: 2px 10px;
-        font-size: 0.72rem;
+        border-radius: 6px;
+        padding: 4px 12px;
+        font-size: 0.75rem;
         font-weight: 700;
         display: inline-block;
-        margin-top: 6px;
+        margin-top: 10px;
     }}
 
-    /* Sección título */
+    /* Sección título más sutil */
     .section-title {{
-        font-size: 1.35rem;
-        font-weight: 700;
+        font-size: 1.4rem;
+        font-weight: 800;
         color: {UPC_DARK};
-        border-left: 5px solid {UPC_RED};
-        padding-left: 12px;
-        margin-bottom: 16px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }}
+    .section-title::before {{
+        content: '';
+        display: inline-block;
+        width: 6px;
+        height: 24px;
+        background-color: {UPC_RED};
+        border-radius: 4px;
     }}
 
     /* Divider */
-    hr.upc {{ border: none; border-top: 2px solid {UPC_GREY}; margin: 20px 0; }}
+    hr.upc {{ border: none; border-top: 1px solid {UPC_GREY}; margin: 24px 0; }}
 
-    /* Alertas */
+    /* Alertas mejoradas */
     .alert-red {{
         background: {UPC_RED_L};
         border-left: 4px solid {UPC_RED};
-        border-radius: 6px;
-        padding: 12px 16px;
+        border-radius: 8px;
+        padding: 16px 20px;
         color: {UPC_DARK};
-        font-size: 0.88rem;
-        margin-bottom: 12px;
+        font-size: 0.95rem;
+        margin-bottom: 16px;
+        box-shadow: 0 2px 6px rgba(225,37,27,0.05);
     }}
     .alert-grey {{
-        background: {UPC_LIGHT};
-        border-left: 4px solid {UPC_DARK};
-        border-radius: 6px;
-        padding: 12px 16px;
+        background: {UPC_WHITE};
+        border: 1px solid {UPC_GREY};
+        border-left: 4px solid #666;
+        border-radius: 8px;
+        padding: 16px 20px;
         color: {UPC_DARK};
-        font-size: 0.88rem;
-        margin-bottom: 12px;
+        font-size: 0.95rem;
+        margin-bottom: 16px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.02);
     }}
 </style>
-""", unsafe_allow_html=True)
+""", unsafe_allow_html=True)""", unsafe_allow_html=True)
 
 
 # ─── Carga de datos ─────────────────────────────────────────────────────────────
@@ -200,13 +231,13 @@ def upc_layout(fig, title="", height=None):
 
 # ─── Sidebar ──────────────────────────────────────────────────────────────────
 with st.sidebar:
-    st.markdown("""
-    <div style='text-align:center; margin-bottom:16px;'>
-        <div style='background:#E1251B; border-radius:50%; width:60px; height:60px;
-                    margin:0 auto 8px auto; display:flex; align-items:center;
-                    justify-content:center; font-size:1.8rem;'>🎓</div>
-        <div style='font-size:1.1rem; font-weight:800; color:white;'>UPIE</div>
-        <div style='font-size:0.75rem; color:rgba(255,255,255,0.65);'>Machine Learning for Business</div>
+    st.markdown(f"""
+    <div style='text-align:center; margin-bottom:24px;'>
+        <div style='background:linear-gradient(135deg, {{UPC_RED}} 0%, #b71c1c 100%); border-radius:50%; width:64px; height:64px;
+                    margin:0 auto 12px auto; display:flex; align-items:center;
+                    justify-content:center; font-size:1.8rem; box-shadow: 0 4px 10px rgba(225,37,27,0.2);'>🎓</div>
+        <div style='font-size:1.2rem; font-weight:800; color:{{UPC_DARK}}; letter-spacing:-0.02em;'>UPIE</div>
+        <div style='font-size:0.8rem; color:#666; font-weight:500;'>Machine Learning for Business</div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -224,7 +255,7 @@ with st.sidebar:
         label_visibility="collapsed",
     )
 
-    st.markdown("<hr style='border:1px solid rgba(255,255,255,0.2); margin:16px 0;'>", unsafe_allow_html=True)
+    st.markdown("<hr style='border:1px solid #EAEAEA; margin:16px 0;'>", unsafe_allow_html=True)
 
     if df is not None:
         st.markdown("**Filtros Globales**")
@@ -239,7 +270,7 @@ with st.sidebar:
     else:
         fac_sel = "Todas"; seg_sel = "Todos"; gen_sel = "Todos"; nse_sel = "Todos"
 
-    st.markdown("<hr style='border:1px solid rgba(255,255,255,0.2); margin:12px 0;'>", unsafe_allow_html=True)
+    st.markdown("<hr style='border:1px solid #EAEAEA; margin:12px 0;'>", unsafe_allow_html=True)
     st.caption("Prof. Istavay Orbegoso, PhD · EPG UPC · 2025")
 
 

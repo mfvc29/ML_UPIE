@@ -238,9 +238,9 @@ else:
 # ══════════════════════════════════════════════════════════════════════════════
 st.markdown("""
 <div style="margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #E2E8F0;">
-    <h1 style="font-size: 1.8rem; font-weight: 600; margin: 0 0 8px 0; color: #31333F;">Caso de Estudio: Universidad Privada Innovación y Excelencia (UPIE)</h1>
+    <h1 style="font-size: 1.8rem; font-weight: 600; margin: 0 0 8px 0; color: #31333F;">Examen Final - Machine Learning for Business | Universidad Peruana de Ciencias Aplicadas (UPC)</h1>
     <p style="font-size: 0.95rem; color: #666; margin: 0 0 12px 0;">
-        Examen Final - Machine Learning for Business | Universidad Peruana de Ciencias Aplicadas (UPC) | Sistema Predictivo de Alerta Temprana (Gradient Boosting Classifier)
+        Caso de Estudio: Universidad Privada Innovación y Excelencia (UPIE) | Sistema Predictivo de Alerta Temprana (Gradient Boosting Classifier)
     </p>
     <div style="font-size: 0.85rem; color: #888; margin: 0;">
         <b>Equipo:</b>

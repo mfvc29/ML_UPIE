@@ -3,13 +3,7 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
-from sklearn.model_selection import train_test_split
-from sklearn.pipeline import Pipeline
-from sklearn.compose import ColumnTransformer
-from sklearn.impute import SimpleImputer
-from sklearn.preprocessing import StandardScaler, OneHotEncoder
-from sklearn.ensemble import GradientBoostingClassifier
-from sklearn.metrics import classification_report, confusion_matrix, roc_curve, auc
+import joblib
 
 # ─── Configuración ─────────────────────────────────────────────────────────────
 st.set_page_config(
@@ -137,57 +131,15 @@ def cargar_datos():
 
 df = cargar_datos()
 
-# ─── Entrenamiento de Modelo (Cacheado) ──────────────────────────────────────
+# ─── Carga de Resultados del Modelo (pre-entrenado) ──────────────────────────
 @st.cache_resource(show_spinner=False)
-def train_model(data):
-    import gc
-    if data is None:
-        return None, None, None
-        
-    df_model = data.copy()
-    leakage_cols = ['V022_EstadoMatricula', 'V001_StudentID', 'V002_MatriculaID', 'V077_SegmentoRetencion', 'V078_TutoriasRecomendadas']
-    target_col = 'V075_DesercionBinario'
-    
-    drop_cols = [col for col in leakage_cols if col in df_model.columns] + [target_col]
-    X = df_model.drop(columns=drop_cols)
-    y = df_model[target_col]
-    del df_model
-    
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
-    del X, y
-    
-    num_features = X_train.select_dtypes(include=['int64', 'float64']).columns
-    cat_features = X_train.select_dtypes(include=['object', 'category', 'str']).columns
-    
-    num_transformer = Pipeline(steps=[
-        ('imputer', SimpleImputer(strategy='median')),
-        ('scaler', StandardScaler())
-    ])
-    
-    cat_transformer = Pipeline(steps=[
-        ('imputer', SimpleImputer(strategy='constant', fill_value='Desconocido')),
-        ('onehot', OneHotEncoder(handle_unknown='ignore', sparse_output=True))
-    ])
-    
-    preprocessor = ColumnTransformer(transformers=[
-        ('num', num_transformer, num_features),
-        ('cat', cat_transformer, cat_features)
-    ])
-    
-    model = Pipeline(steps=[
-        ('preprocessor', preprocessor),
-        ('classifier', GradientBoostingClassifier(
-            n_estimators=50, learning_rate=0.1, max_depth=3, random_state=42,
-            subsample=0.8, max_features='sqrt'
-        ))
-    ])
-    
-    model.fit(X_train, y_train)
-    del X_train, y_train
-    gc.collect()
-    return model, X_test, y_test
+def load_model_results():
+    try:
+        return joblib.load("model_results.joblib")
+    except Exception:
+        return None
 
-model_gb, X_test, y_test = train_model(df)
+model_results = load_model_results()
 
 
 # ─── Helper: layout de gráficos con fondo blanco ──────────────────────────────
@@ -657,16 +609,16 @@ elif seccion == "Mapa de Calor de Riesgo":
 elif seccion == "Resultados del Modelo":
     st.markdown('<div class="section-title">Resultados del Modelo — Gradient Boosting Classifier</div>', unsafe_allow_html=True)
 
-    if model_gb is not None:
-        from sklearn.metrics import accuracy_score, f1_score
-        y_pred = model_gb.predict(X_test)
-        y_prob = model_gb.predict_proba(X_test)[:, 1]
-        
-        acc = accuracy_score(y_test, y_pred)
-        fpr, tpr, _ = roc_curve(y_test, y_prob)
-        roc_val = auc(fpr, tpr)
-        f1_0 = f1_score(y_test, y_pred, pos_label=0)
-        f1_1 = f1_score(y_test, y_pred, pos_label=1)
+    if model_results is not None:
+        r = model_results
+        acc = r['accuracy']
+        roc_val = r['roc_auc']
+        f1_0 = r['f1_0']
+        f1_1 = r['f1_1']
+        fpr = r['fpr']
+        tpr = r['tpr']
+        cm = r['cm']
+        report = r['report']
         
         c1, c2, c3, c4 = st.columns(4)
         for col, val, lbl in zip([c1,c2,c3,c4],
@@ -679,23 +631,21 @@ elif seccion == "Resultados del Modelo":
     
         with col_a:
             # Classification report
-            st.markdown(f'<div class="section-title">Reporte de Clasificación (Set de Prueba · {len(y_test):,} est.)</div>', unsafe_allow_html=True)
-            report = classification_report(y_test, y_pred, output_dict=True)
+            st.markdown(f'<div class="section-title">Reporte de Clasificacion (Set de Prueba - {r["n_test"]:,} est.)</div>', unsafe_allow_html=True)
             rep = pd.DataFrame({
-                "Clase": ["0 — Activo","1 — Desertor","Macro Avg","Weighted Avg"],
+                "Clase": ["0 - Activo","1 - Desertor","Macro Avg","Weighted Avg"],
                 "Precision": [report["0"]["precision"], report["1"]["precision"], report["macro avg"]["precision"], report["weighted avg"]["precision"]],
                 "Recall": [report["0"]["recall"], report["1"]["recall"], report["macro avg"]["recall"], report["weighted avg"]["recall"]],
                 "F1-Score": [report["0"]["f1-score"], report["1"]["f1-score"], report["macro avg"]["f1-score"], report["weighted avg"]["f1-score"]],
                 "Support": [int(report["0"]["support"]), int(report["1"]["support"]), int(report["macro avg"]["support"]), int(report["weighted avg"]["support"])],
             })
             st.dataframe(rep.style.format({"Precision":"{:.2f}","Recall":"{:.2f}","F1-Score":"{:.2f}"}),
-                         width='stretch')
+                         use_container_width=True)
     
-            # Matriz de confusión
-            st.markdown('<div class="section-title">Matriz de Confusión</div>', unsafe_allow_html=True)
-            cm = confusion_matrix(y_test, y_pred)
-            z = [[cm[0,0], cm[0,1]], [cm[1,0], cm[1,1]]]
-            annotations = [[f"VN: {cm[0,0]:,}", f"FP: {cm[0,1]:,}"], [f"FN: {cm[1,0]:,}", f"VP: {cm[1,1]:,}"]]
+            # Matriz de confusion
+            st.markdown('<div class="section-title">Matriz de Confusion</div>', unsafe_allow_html=True)
+            z = [[cm[0][0], cm[0][1]], [cm[1][0], cm[1][1]]]
+            annotations = [[f"VN: {cm[0][0]:,}", f"FP: {cm[0][1]:,}"], [f"FN: {cm[1][0]:,}", f"VP: {cm[1][1]:,}"]]
             fig_cm = go.Figure(go.Heatmap(
                 z=z, x=["Pred: Activo","Pred: Desertor"], y=["Real: Activo","Real: Desertor"],
                 colorscale=[[0,UPC_LIGHT],[1,UPC_RED]],
@@ -714,33 +664,29 @@ elif seccion == "Resultados del Modelo":
                                          line=dict(color=UPC_RED, width=2.5)))
             fig_roc.add_trace(go.Scatter(x=[0,1], y=[0,1], name="Clasificador Aleatorio",
                                          line=dict(color=UPC_GREY, dash="dash", width=1.5)))
-            upc_layout(fig_roc, "Curva ROC — Gradient Boosting Classifier", height=320)
+            upc_layout(fig_roc, "Curva ROC - Gradient Boosting Classifier", height=320)
             fig_roc.update_layout(xaxis_title="FPR", yaxis_title="TPR",
                                   legend=dict(font=dict(color=UPC_DARK)))
             st.plotly_chart(fig_roc, use_container_width=True)
 
-    with col_b:
-        # Feature Importance (celda 17 del notebook)
-        st.markdown('<div class="section-title">Feature Importance — Top 15 Predictores (Celda 17 Notebook)</div>', unsafe_allow_html=True)
-        feats = ["V074_SHAP_MoraPension","V072_ConfidenceScore","V026_MoraPensionDias",
-                 "V027_DeudaPendiente","V045_IndiceEstresPercibido","V021_TasaAprobacionHist",
-                 "V067_RiesgoDesercionPCA1","V017_PPA","V031_TasaAsistenciaPct","V018_PPC",
-                 "V019_CursosDesaprobados","V033_HorasLMS","V041_BienestarMental",
-                 "V029_IngresoLaboral","V046_SatisfaccionGeneral"]
-        imps = [0.180,0.140,0.110,0.090,0.070,0.060,0.050,0.050,0.050,0.040,0.040,0.030,0.030,0.030,0.030]
-        df_imp = pd.DataFrame({"Variable":feats,"Importancia":imps}).sort_values("Importancia")
-        fig_imp = go.Figure(go.Bar(
-            y=df_imp["Variable"], x=df_imp["Importancia"], orientation="h",
-            marker=dict(
-                color=df_imp["Importancia"],
-                colorscale=[[0,UPC_LIGHT],[0.5,"#f97316"],[1,UPC_RED]],
-            ),
-            text=df_imp["Importancia"].apply(lambda v: f"{v:.1%}"),
-            textposition="outside",
-        ))
-        upc_layout(fig_imp, "Top 15 Predictores de Deserción", height=480)
-        fig_imp.update_layout(xaxis_title="Importancia Relativa")
-        st.plotly_chart(fig_imp, use_container_width=True)
+        with col_b:
+            # Feature Importance (del modelo real)
+            st.markdown('<div class="section-title">Feature Importance - Top 15 Predictores</div>', unsafe_allow_html=True)
+            feats = r.get('top_features', [])
+            imps = r.get('top_importances', [])
+            df_imp = pd.DataFrame({"Variable":feats,"Importancia":imps}).sort_values("Importancia")
+            fig_imp = go.Figure(go.Bar(
+                y=df_imp["Variable"], x=df_imp["Importancia"], orientation="h",
+                marker=dict(
+                    color=df_imp["Importancia"],
+                    colorscale=[[0,UPC_LIGHT],[0.5,"#f97316"],[1,UPC_RED]],
+                ),
+                text=df_imp["Importancia"].apply(lambda v: f"{v:.1%}"),
+                textposition="outside",
+            ))
+            upc_layout(fig_imp, "Top 15 Predictores de Desercion", height=480)
+            fig_imp.update_layout(xaxis_title="Importancia Relativa")
+            st.plotly_chart(fig_imp, use_container_width=True)
 
         # AUC por Facultad (Model Card SUNEDU)
         st.markdown('<div class="section-title">AUC por Facultad (Model Card Regulatorio)</div>', unsafe_allow_html=True)

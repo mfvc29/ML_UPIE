@@ -395,6 +395,7 @@ elif seccion == "Exploración del Dataset":
                           color="V075_DesercionBinario",
                           color_discrete_map={0: UPC_DARK, 1: UPC_RED},
                           opacity=0.5,
+                          render_mode="svg",
                           
                           labels={"V026_MoraPensionDias": "Mora en Pensión (días)",
                                   "V031_TasaAsistenciaPct": "Asistencia (%)",
@@ -538,12 +539,13 @@ elif seccion == "Mapa de Calor de Riesgo":
             df_scores = df_f[score_cols_exist].sort_values("V072_ConfidenceScoreDesercion", ascending=False)
 
             # Scatter confidence vs SHAP
-            fig3 = px.scatter(df_f.sample(min(2000, len(df_f))),
+            fig3 = px.scatter(df_f,
                               x="V072_ConfidenceScoreDesercion",
                               y="V074_SHAP_MoraPension",
                               color="V075_DesercionBinario",
                               color_discrete_map={0: UPC_DARK, 1: UPC_RED},
                               opacity=0.55,
+                              render_mode="svg",
                               labels={"V072_ConfidenceScoreDesercion": "Confidence Score Deserción (V072)",
                                       "V074_SHAP_MoraPension": "SHAP Mora Pensión (V074)",
                                       "V075_DesercionBinario": "Desertor"})
@@ -572,6 +574,7 @@ elif seccion == "Mapa de Calor de Riesgo":
                               color="V075_DesercionBinario",
                               color_discrete_map={0:UPC_DARK,1:UPC_RED},
                               opacity=0.5,
+                              render_mode="svg",
                               labels={"V053_TokensForoTexto":"Tokens Foro (V053)",
                                       "V054_SentimientoForoNLP":"Sentimiento NLP (V054)",
                                       "V075_DesercionBinario":"Desertor"})
@@ -786,7 +789,8 @@ elif seccion == "Política de Retención":
 
         # Bubble chart segmentos
         fig_bub = px.scatter(seg_tbl, x="Asistencia %", y="Tasa %",
-                             size="Total", color="Segmento", text="Segmento",
+                             size="Total", color="Segmento",
+                             render_mode="svg", text="Segmento",
                              color_discrete_map={"Estrella":"#28a745","Comprometido":UPC_DARK,
                                                  "En seguimiento":"#fd7e14","Vulnerable":UPC_RED},
                              size_max=70,
